@@ -3,6 +3,7 @@
 package riot
 
 import (
+	"github.com/KnutZuidema/golio/riot/rso"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/KnutZuidema/golio/api"
@@ -36,6 +37,7 @@ type Client struct {
 	LoL *lol.Client
 	LoR *lor.Client
 	Val *val.Client
+	RSO *rso.Client
 }
 
 // NewClient returns a new api client for the Riot API
@@ -45,6 +47,7 @@ func NewClient(region api.Region, apiKey string, client internal.Doer, logger lo
 		LoL: lol.NewClient(baseClient),
 		LoR: lor.NewClient(baseClient),
 		Val: val.NewClient(baseClient),
+		RSO: rso.NewClient(baseClient),
 	}
 
 	// TODO: deprecated, remove in a future release
