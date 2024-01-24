@@ -3,6 +3,7 @@
 package riot
 
 import (
+	"github.com/KnutZuidema/golio/riot/tft"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/KnutZuidema/golio/api"
@@ -35,6 +36,7 @@ type Client struct {
 	Tournament *lol.TournamentClient
 
 	Account *account.Client
+	TfT     *tft.Client
 	LoL     *lol.Client
 	LoR     *lor.Client
 	Val     *val.Client
@@ -48,6 +50,7 @@ func NewClient(region api.Region, apiKey string, client internal.Doer, logger lo
 		LoL:     lol.NewClient(baseClient),
 		LoR:     lor.NewClient(baseClient),
 		Val:     val.NewClient(baseClient),
+		TfT:     tft.NewClient(baseClient),
 	}
 
 	// TODO: deprecated, remove in a future release
