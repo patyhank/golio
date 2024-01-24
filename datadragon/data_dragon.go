@@ -5,6 +5,7 @@ package datadragon
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,9 +19,10 @@ import (
 )
 
 const (
-	latestRuneAndMasteryVersion = "7.23.1"
-	fallbackVersion             = "9.10.1"
-	fallbackLanguage            = LanguageCodeUnitedStates
+	latestRuneAndMasteryVersion   = "7.23.1"
+	latestTeamfightTacticsVersion = "13.24.1"
+	fallbackVersion               = "9.10.1"
+	fallbackLanguage              = LanguageCodeTaiwan
 )
 
 var (
@@ -64,6 +66,23 @@ type Client struct {
 	runes              []Item
 	summonersMu        sync.RWMutex
 	summoners          []SummonerSpell
+
+	tftArenaMu     sync.RWMutex
+	tftArena       map[string]TFTVal
+	tftAugmentsMu  sync.RWMutex
+	tftAugments    map[string]TFTVal
+	tftChampionMu  sync.RWMutex
+	tftChampion    map[string]TFTTierVal
+	tftItemMu      sync.RWMutex
+	tftItem        map[string]TFTVal
+	tftQueuesMu    sync.RWMutex
+	tftQueues      map[string]TFTVal
+	tftRegaliaMu   sync.RWMutex
+	tftRegalia     map[string]TFTVal
+	tftTacticianMu sync.RWMutex
+	tftTactician   map[string]TFTTierVal
+	tftTraitMu     sync.RWMutex
+	tftTrait       map[string]TFTVal
 }
 
 // NewClient returns a new client for the Data Dragon service.
@@ -211,6 +230,136 @@ func (c *Client) GetItems() ([]Item, error) {
 	return res, nil
 }
 
+// GetTFTArena returns all existing arenas
+func (c *Client) GetTFTArena() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftArenaMu)
+	defer unlock()
+	if len(c.items) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-arena.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftArena = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftArena)
+	return res, nil
+}
+
+func (c *Client) GetTFTAugments() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftAugmentsMu)
+	defer unlock()
+	if len(c.tftAugments) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-augments.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftAugments = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftAugments)
+	return res, nil
+}
+
+func (c *Client) GetTFTChampion() (map[string]TFTTierVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftChampionMu)
+	defer unlock()
+	if len(c.tftChampion) < 1 {
+		toggle()
+		var res map[string]TFTTierVal
+		if err := c.getInto("/tft-arena.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftChampion = res
+	}
+	res := make(map[string]TFTTierVal)
+	maps.Copy(res, c.tftChampion)
+	return res, nil
+}
+
+func (c *Client) GetTFTItems() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftItemMu)
+	defer unlock()
+	if len(c.items) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-item.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftItem = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftItem)
+	return res, nil
+}
+
+func (c *Client) GetTFTQueues() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftQueuesMu)
+	defer unlock()
+	if len(c.tftQueues) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-queues.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftQueues = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftQueues)
+	return res, nil
+}
+
+// GetTFTRegalia returns all existing arenas
+func (c *Client) GetTFTRegalia() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftRegaliaMu)
+	defer unlock()
+	if len(c.tftRegalia) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-regalia.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftRegalia = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftRegalia)
+	return res, nil
+}
+
+func (c *Client) GetTFTTactician() (map[string]TFTTierVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftTacticianMu)
+	defer unlock()
+	if len(c.tftTactician) < 1 {
+		toggle()
+		var res map[string]TFTTierVal
+		if err := c.getInto("/tft-tactician.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftTactician = res
+	}
+	res := make(map[string]TFTTierVal)
+	maps.Copy(res, c.tftTactician)
+	return res, nil
+}
+
+func (c *Client) GetTFTTrait() (map[string]TFTVal, error) {
+	unlock, toggle := internal.RWLockToggle(&c.tftTraitMu)
+	defer unlock()
+	if len(c.tftTrait) < 1 {
+		toggle()
+		var res map[string]TFTVal
+		if err := c.getInto("/tft-trait.json", &res); err != nil {
+			return nil, err
+		}
+		c.tftTrait = res
+	}
+	res := make(map[string]TFTVal)
+	maps.Copy(res, c.tftTrait)
+	return res, nil
+}
+
 // GetItem return information about the item with the given id
 func (c *Client) GetItem(id string) (Item, error) {
 	items, err := c.GetItems()
@@ -351,6 +500,23 @@ func (c *Client) ClearCaches() {
 	c.runesMu.Lock()
 	c.runes = []Item{}
 	c.runesMu.Unlock()
+
+	c.tftArena = map[string]TFTVal{}
+	c.tftAugments = map[string]TFTVal{}
+	c.tftChampion = map[string]TFTTierVal{}
+	c.tftItem = map[string]TFTVal{}
+	c.tftQueues = map[string]TFTVal{}
+	c.tftRegalia = map[string]TFTVal{}
+	c.tftTactician = map[string]TFTTierVal{}
+	c.tftTrait = map[string]TFTVal{}
+	c.tftArenaMu.Unlock()
+	c.tftAugmentsMu.Unlock()
+	c.tftChampionMu.Unlock()
+	c.tftItemMu.Unlock()
+	c.tftQueuesMu.Unlock()
+	c.tftRegaliaMu.Unlock()
+	c.tftTacticianMu.Unlock()
+	c.tftTraitMu.Unlock()
 }
 
 func (c *Client) getInto(endpoint string, target interface{}) error {
@@ -395,6 +561,9 @@ func (c *Client) newRequest(format dataDragonURL, endpoint string) (*http.Reques
 	if (strings.Contains(endpoint, "rune") || strings.Contains(endpoint, "mastery")) &&
 		versionGreaterThan(c.Version, latestRuneAndMasteryVersion) {
 		version = latestRuneAndMasteryVersion
+	} else if (strings.Contains(endpoint, "tft")) &&
+		versionGreaterThan(c.Version, latestTeamfightTacticsVersion) {
+		version = latestTeamfightTacticsVersion
 	} else {
 		version = c.Version
 	}

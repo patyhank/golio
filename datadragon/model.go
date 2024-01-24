@@ -318,3 +318,21 @@ type SummonerSpell struct {
 	Image         ImageData `json:"image"`
 	Resource      string    `json:"resource"`
 }
+type DDData[T any] struct {
+	Type    string       `json:"type"`
+	Version string       `json:"version"`
+	Data    map[string]T `json:"data"`
+}
+
+type TFTVal struct {
+	Id    string    `json:"id"`
+	Name  string    `json:"name"`
+	Image ImageData `json:"image"`
+}
+
+type TFTTierVal struct {
+	Id    string    `json:"id"`
+	Tier  string    `json:"tier"`
+	Name  string    `json:"name"`
+	Image ImageData `json:"image"`
+}
